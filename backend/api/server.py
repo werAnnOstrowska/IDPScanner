@@ -59,8 +59,15 @@ def ensure_image_format(file_path: str) -> str:
 #API initialization
 app = FastAPI(title="IDP Enterprise API", version="1.0")
 app.add_middleware(
-    CORSMiddleware, allow_origins=["*"], allow_credentials=True,
-    allow_methods=["*"], allow_headers=["*"],
+    CORSMiddleware,
+    allow_origins=[
+        "https://idp-scanner.vercel.app", 
+        "http://localhost:5173", 
+        "http://localhost:3000"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 #DB Session 
