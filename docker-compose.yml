@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  postgres_db:
+    image: postgres:15-alpine
+    container_name: idp_postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: idp_admin
+      POSTGRES_PASSWORD: supertajnehaslo123
+      POSTGRES_DB: idp_documents
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U idp_admin -d idp_documents"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+      build: 
+        context: ./backend
+      container_name: idp_backend_core
+      init: true      
+      restart: always
+      ports:
+        - "8000:8000"
+      depends_on:
+        postgres_db:
+          condition: service_healthy
+      environment:
+        - DATABASE_URL=postgresql://idp_admin:supertajnehaslo123@postgres_db:5432/idp_documents
+      volumes:
+        - ./backend:/app
+      command: uvicorn api.server:app --host 0.0.0.0 --port 8000 --reload
+
+volumes:
+  pgdata:

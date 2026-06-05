@@ -1,0 +1,29 @@
+# Modele uczenia maszynowego (PyTorch/TensorFlow)
+*.pth
+*.pt
+*.onnx
+
+# Zmienne środowiskowe (KRYTYCZNE)
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Backend (Python)
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.pytest_cache/
+/app/data/output/
+
+# Frontend (Node.js / React)
+node_modules/
+dist/
+build/
+.npm/
+
+# Lokalne foldery i śmieci
+archive/

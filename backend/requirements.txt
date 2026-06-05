@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+python-multipart
+PyMuPDF
+sqlalchemy
+psycopg2-binary
+torch
+torchvision
+opencv-python-headless
+numpy
+requests
+easyocr
+python-dotenv
