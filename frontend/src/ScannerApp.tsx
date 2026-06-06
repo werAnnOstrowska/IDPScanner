@@ -33,6 +33,7 @@ export default function ScannerApp() {
   const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
   
   const [imageScale, setImageScale] = useState({ x: 1, y: 1 });
+  const [previewImageUrl, setPreviewImageUrl] = useState<string>('');
   const imgRef = useRef<HTMLImageElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -53,6 +54,31 @@ export default function ScannerApp() {
     return () => window.removeEventListener('resize', updateScale);
   }, []);
 
+  useEffect(() => {
+    let objectUrl = '';
+    
+    if (currentState === 'edit' && currentTaskId) {
+      fetch(`${apiUrl}/api/v1/image/${currentTaskId}`, {
+        headers: {
+          'ngrok-skip-browser-warning': 'true' 
+        }
+      })
+      .then(res => {
+        if (!res.ok) throw new Error("Błąd pobierania obrazu");
+        return res.blob();
+      })
+      .then(blob => {
+        objectUrl = window.URL.createObjectURL(blob);
+        setPreviewImageUrl(objectUrl);
+      })
+      .catch(err => console.error(err));
+    }
+    
+    return () => {
+      if (objectUrl) window.URL.revokeObjectURL(objectUrl);
+    };
+  }, [currentState, currentTaskId]);
+
   const triggerFileSelect = () => fileInputRef.current?.click();
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -72,7 +98,6 @@ export default function ScannerApp() {
     formData.append('file', selectedFile);
 
     try {
-      // DODANO NAGŁÓWEK OMIJAJĄCY BLOKADĘ NGROK
       const initResponse = await fetch(`${apiUrl}/api/v1/scan`, { 
         method: 'POST', 
         body: formData,
@@ -87,7 +112,6 @@ export default function ScannerApp() {
 
       const checkStatus = async () => {
         try {
-          // DODANO NAGŁÓWEK OMIJAJĄCY BLOKADĘ NGROK
           const statusResponse = await fetch(`${apiUrl}/api/v1/status/${taskId}`, {
             headers: {
               'ngrok-skip-browser-warning': 'true'
@@ -119,7 +143,6 @@ export default function ScannerApp() {
   const handleDownloadZip = async () => {
     if (!currentTaskId) return;
     try {
-      // DODANO NAGŁÓWEK OMIJAJĄCY BLOKADĘ NGROK
       const response = await fetch(`${apiUrl}/api/v1/download/${currentTaskId}`, {
         headers: {
           'ngrok-skip-browser-warning': 'true'
@@ -281,7 +304,7 @@ export default function ScannerApp() {
             <div style={{ position: 'relative', display: 'inline-block', textAlign: 'left' }}>
               <img 
                 ref={imgRef}
-                src={`${apiUrl}/api/v1/image/${currentTaskId}`}
+                src={previewImageUrl}
                 onLoad={updateScale}
                 style={{ 
                   display: 'block', 
