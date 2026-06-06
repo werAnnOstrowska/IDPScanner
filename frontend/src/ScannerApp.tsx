@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import uploadArrow from './assets/arrow.svg';
 import cameraIcon from './assets/camera.svg';
 import clipIcon from './assets/clipIcon.svg';
-import notesIcon from './assets/notesIcon.svg'
+import notesIcon from './assets/notesIcon.svg';
 
 import './ScannerApp.css';
 
@@ -72,7 +72,14 @@ export default function ScannerApp() {
     formData.append('file', selectedFile);
 
     try {
-      const initResponse = await fetch(`${apiUrl}/api/v1/scan`, { method: 'POST', body: formData });
+      // DODANO NAGŁÓWEK OMIJAJĄCY BLOKADĘ NGROK
+      const initResponse = await fetch(`${apiUrl}/api/v1/scan`, { 
+        method: 'POST', 
+        body: formData,
+        headers: {
+          'ngrok-skip-browser-warning': 'true'
+        }
+      });
       if (!initResponse.ok) throw new Error(`Błąd serwera: ${initResponse.status}`);
       const initData = await initResponse.json();
       const taskId = initData.task_id;
@@ -80,7 +87,12 @@ export default function ScannerApp() {
 
       const checkStatus = async () => {
         try {
-          const statusResponse = await fetch(`${apiUrl}/api/v1/status/${taskId}`);
+          // DODANO NAGŁÓWEK OMIJAJĄCY BLOKADĘ NGROK
+          const statusResponse = await fetch(`${apiUrl}/api/v1/status/${taskId}`, {
+            headers: {
+              'ngrok-skip-browser-warning': 'true'
+            }
+          });
           if (!statusResponse.ok) throw new Error("Błąd podczas odpytywania.");
           const statusData = await statusResponse.json();
 
@@ -107,7 +119,12 @@ export default function ScannerApp() {
   const handleDownloadZip = async () => {
     if (!currentTaskId) return;
     try {
-      const response = await fetch(`${apiUrl}/api/v1/download/${currentTaskId}`);
+      // DODANO NAGŁÓWEK OMIJAJĄCY BLOKADĘ NGROK
+      const response = await fetch(`${apiUrl}/api/v1/download/${currentTaskId}`, {
+        headers: {
+          'ngrok-skip-browser-warning': 'true'
+        }
+      });
       if (!response.ok) throw new Error(`Błąd pobierania: ${response.status}`);
       const blob = await response.blob();
       const downloadUrl = window.URL.createObjectURL(blob);
@@ -232,7 +249,6 @@ export default function ScannerApp() {
           </AnimatePresence>
         </section>
       </main>
-
 
       <AnimatePresence>
         {currentState === 'edit' && currentTaskId && (
