@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import uuid
 import shutil
@@ -20,6 +21,8 @@ from core.pdfa_generator import create_searchable_pdf
 
 #env variables
 load_dotenv()
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 #DB connection 
 SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
@@ -126,10 +129,12 @@ async def get_task_status(task_id: str, db: Session = Depends(get_db)):
 #endpoint - zip export;
 @app.get("/api/v1/download/{task_id}")
 async def download_results(task_id: str, db: Session = Depends(get_db)):
-    output_dir = "/app/data/output"
-    orig_path = f"{output_dir}/{task_id}_oryginal.jpg"
-    proc_path = f"{output_dir}/{task_id}_przetworzony.jpg"
-    pdf_path = f"{output_dir}/{task_id}_archival.pdf"
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    output_dir = os.path.join(base_dir, "data", "output")
+    
+    orig_path = os.path.join(output_dir, f"{task_id}_oryginal.jpg")
+    proc_path = os.path.join(output_dir, f"{task_id}_przetworzony.jpg")
+    pdf_path = os.path.join(output_dir, f"{task_id}_archival.pdf")
     
     zip_buffer = io.BytesIO()
     
@@ -158,10 +163,13 @@ async def download_results(task_id: str, db: Session = Depends(get_db)):
     zip_buffer.seek(0)
     return StreamingResponse(zip_buffer, media_type="application/zip", headers={"Content-Disposition": f"attachment; filename=IDP_Pakiet_{task_id}.zip"})
 
+
 #endpoint - image showcase
 @app.get("/api/v1/image/{task_id}")
 async def get_image(task_id: str):
-    path = f"/app/data/output/{task_id}_oryginal.jpg"
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    path = os.path.join(base_dir, "data", "output", f"{task_id}_oryginal.jpg")
+    
     if os.path.exists(path):
         return FileResponse(path)
     raise HTTPException(status_code=404, detail="Obraz nie istnieje w folderze output")

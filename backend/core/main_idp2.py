@@ -10,7 +10,7 @@ from core import page_scanner
 
 #configuration 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-OLLAMA_URL = "http://host.docker.internal:11434/api/generate"
+OLLAMA_URL = "http://127.0.0.1:11434/api/generate"
 OLLAMA_MODEL = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M"
 
 #utilities

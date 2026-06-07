@@ -172,7 +172,6 @@ export default function ScannerApp() {
     <div className="scanner-page-container">
       <nav className="scanner-navbar">
         <Link to="/" className="scanner-logo">IDPScanner</Link>
-        <span className="system-status">ENV: LOCAL_HOST // READY</span>
       </nav>
 
       <main className="scanner-layout">

@@ -69,7 +69,8 @@ def scan_header_text(image, detector, task_id_z_pliku="debug_skan"):
     final_text = " ".join(header_words_crnn)
     
     # save artifacts
-    output_dir = "/app/data/output" 
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    output_dir = os.path.join(base_dir, "data", "output")
     os.makedirs(output_dir, exist_ok=True)
     
     oryginal_path = os.path.join(output_dir, f"{task_id_z_pliku}_oryginal.jpg")
