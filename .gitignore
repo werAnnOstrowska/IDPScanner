@@ -20,6 +20,8 @@ env/
 backend/data/output
 output/
 .idea/
+.idea/
+*.db
 # Frontend (Node.js / React)
 node_modules/
 dist/
