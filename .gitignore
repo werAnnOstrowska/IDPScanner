@@ -19,7 +19,7 @@ env/
 .pytest_cache/
 backend/data/output
 output/
-
+.idea/
 # Frontend (Node.js / React)
 node_modules/
 dist/
