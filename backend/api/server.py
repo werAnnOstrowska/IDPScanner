@@ -13,6 +13,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, FileResponse
 import zipfile
 import io
+from pydantic import BaseModel
+from typing import List, Dict, Any
 from sqlalchemy import create_engine, Column, String, DateTime, Text, JSON
 from sqlalchemy.orm import declarative_base, sessionmaker, Session
 
@@ -41,6 +43,13 @@ class DocumentRecord(Base):
     error_message = Column(Text, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+class OCRWordUpdate(BaseModel):
+    text: str
+    box: Dict[str, Any]
+
+class UpdateOCRRequest(BaseModel):
+    Geometria_OCR: List[OCRWordUpdate]
 
 #Database initialization
 Base.metadata.create_all(bind=engine)
@@ -115,6 +124,25 @@ async def upload_document(background_tasks: BackgroundTasks, file: UploadFile = 
         shutil.copyfileobj(file.file, buffer)
     background_tasks.add_task(run_background_pipeline, task_id, temp_file_path)
     return {"message": "Zadanie przyjęte do kolejki", "task_id": task_id}
+
+@app.put("/api/v1/update_ocr/{task_id}")
+async def update_ocr_data(task_id: str, payload: UpdateOCRRequest, db: Session = Depends(get_db)):
+    record = db.query(DocumentRecord).filter(DocumentRecord.id == task_id).first()
+    if not record: 
+        raise HTTPException(status_code=404, detail="Brak zadania.")
+
+    if record.result_data:
+        updated_data = dict(record.result_data)
+        
+        updated_data["Geometria_OCR"] = [item.dict() for item in payload.Geometria_OCR]
+        
+        zaktualizowany_tekst = " ".join([item.text for item in payload.Geometria_OCR])
+        updated_data["Pelny_Tekst_OCR"] = zaktualizowany_tekst
+
+        record.result_data = updated_data
+        db.commit()
+
+    return {"message": "Dane OCR zostały zaktualizowane pomyślnie."}
 
 #Endpoint - status;
 @app.get("/api/v1/status/{task_id}")
