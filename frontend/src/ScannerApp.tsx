@@ -37,6 +37,29 @@ export default function ScannerApp() {
   const imgRef = useRef<HTMLImageElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // NAPRAWIONA, W PEŁNI OTYPOWANA FUNKCJA
+  const handleOcrTextChange = (index: number, newValue: string) => {
+    setResultData((prevData) => {
+      // 1. Zabezpieczenie przed nullem: jeśli nie ma danych lub brakuje geometrii, przerywamy
+      if (!prevData || !prevData.Geometria_OCR) return prevData;
+
+      // 2. Tworzymy nową tablicę (płytka kopia - wymóg Reacta)
+      const updatedGeometria = [...prevData.Geometria_OCR];
+      
+      // 3. Tworzymy nowy obiekt dla konkretnego słowa, zachowując starą ramkę (box) i zmieniając tekst
+      updatedGeometria[index] = { 
+        ...updatedGeometria[index], 
+        text: newValue 
+      };
+
+      // 4. Zwracamy nowy obiekt głównego stanu, zachowujący idealnie interfejs IDPResponse
+      return {
+        ...prevData,
+        Geometria_OCR: updatedGeometria
+      };
+    });
+  };
+
   const updateScale = () => {
     if (imgRef.current) {
       const { naturalWidth, naturalHeight, clientWidth, clientHeight } = imgRef.current;
@@ -168,6 +191,32 @@ export default function ScannerApp() {
       setResultData(null);
   };
 
+  const handleCloseEditorAndSave = async () => {
+    if (!currentTaskId || !resultData || !resultData.Geometria_OCR) {
+      setCurrentState('result');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${apiUrl}/api/v1/update_ocr/${currentTaskId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        },
+        body: JSON.stringify({ Geometria_OCR: resultData.Geometria_OCR })
+      });
+
+      if (!response.ok) throw new Error("Błąd podczas zapisywania zmian na serwerze.");
+      
+      setCurrentState('result');
+    } catch (err) {
+      console.error(err);
+      alert("Wystąpił problem z zapisem korekty w bazie danych.");
+      setCurrentState('result'); 
+    }
+  };
+
   return (
     <div className="scanner-page-container">
       <nav className="scanner-navbar">
@@ -290,7 +339,7 @@ export default function ScannerApp() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', textAlign: 'left' }}>
               <h2 style={{ color: '#eab308', margin: 0, fontFamily: 'monospace' }}>KOREKTA WARSTWY WIZYJNEJ (RAW OCR)</h2>
               <button 
-                onClick={() => setCurrentState('result')}
+                onClick={handleCloseEditorAndSave}
                 style={{
                   background: '#333', color: '#fff', border: 'none', padding: '10px 20px', 
                   cursor: 'pointer', fontFamily: 'monospace', fontWeight: 'bold'
@@ -322,7 +371,8 @@ export default function ScannerApp() {
                   <input
                     key={idx}
                     type="text"
-                    defaultValue={item.text}
+                    value={item.text}
+                    onChange={(e) => handleOcrTextChange(idx, e.target.value)}
                     className="ocr-input-box" 
                     style={{
                       left: `${item.box.x * imageScale.x}px`,
