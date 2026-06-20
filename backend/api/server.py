@@ -17,6 +17,7 @@ from pydantic import BaseModel
 from typing import List, Dict, Any
 from sqlalchemy import create_engine, Column, String, DateTime, Text, JSON
 from sqlalchemy.orm import declarative_base, sessionmaker, Session
+from sqlalchemy.orm.attributes import flag_modified
 
 from core.main_idp2 import process_simple_document
 from core.pdfa_generator import create_searchable_pdf
@@ -135,11 +136,12 @@ async def update_ocr_data(task_id: str, payload: UpdateOCRRequest, db: Session =
         updated_data = dict(record.result_data)
         
         updated_data["Geometria_OCR"] = [item.dict() for item in payload.Geometria_OCR]
-        
         zaktualizowany_tekst = " ".join([item.text for item in payload.Geometria_OCR])
         updated_data["Pelny_Tekst_OCR"] = zaktualizowany_tekst
 
         record.result_data = updated_data
+        
+        flag_modified(record, "result_data") 
         db.commit()
 
     return {"message": "Dane OCR zostały zaktualizowane pomyślnie."}
