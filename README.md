@@ -98,13 +98,11 @@ The React + TypeScript client is built as a **Progressive Web App (PWA)**, enabl
 * **Responsive UX:** Condensed dropzones and non-blocking `framer-motion` loader animations ensure a smooth experience during the heavy local background processing.
 * **PWA Install Prompt:** Users can add IDPScanner to their home screen for a native-app-like experience, with no dependency on the App Store or Google Play.
 
-![M1](./assets/M1.jpg)
-![M2](./assets/M2.jpg)
-![M3](./assets/M3.jpg)
-![M4](./assets/M4.jpg)
-![M5](./assets/M5.jpg)
-![M6](./assets/M6.jpg)
-![M7](./assets/M7.jpg)
+| | | |
+|:---:|:---:|:---:|
+| ![M1](./assets/M1.jpg) | ![M2](./assets/M2.jpg) | ![M3](./assets/M3.jpg) |
+| ![M4](./assets/M4.jpg) | ![M5](./assets/M5.jpg) | ![M6](./assets/M6.jpg) |
+| ![M7](./assets/M7.jpg) | | |
 
 
 ---
@@ -207,7 +205,13 @@ Aplikacja kliencka (React + TypeScript) została zbudowana jako **Progressive We
 * **Kontrolowane Komponenty (Controlled Components):** Operator edytuje tekst w polach `<input>` nałożonych na obraz. Korekta aktualizuje lokalny stan React, nie wyzwalając ponownego, kosztownego odpytywania modelu LLM.
 * **Asynchroniczna Synchronizacja:** Zamknięcie edytora wyzwala żądanie `PUT`, które nadpisuje surową geometrię w bazie danych. Dzięki temu wygenerowany następnie plik PDF/A odzwierciedla wprowadzone manualnie poprawki.
 
-*(Zrzut ekranu: Interaktywny edytor wizualny mapujący wektory bounding boxes bezpośrednio na skan dokumentu)*
+![D1](./assets/D1.png)
+![D2](./assets/D2.png)
+![D3](./assets/D3.png)
+![D4](./assets/D4.png)
+![D5](./assets/D5.png)
+![D6](./assets/D6.png)
+![D7](./assets/D7.png)
 
 ### 📱 Tryb Mobilny (Skanowanie w terenie)
 
@@ -215,7 +219,11 @@ Aplikacja kliencka (React + TypeScript) została zbudowana jako **Progressive We
 * **Optymalizacja UX:** Responsywne strefy dropzone oraz nieblokujące wątku głównego animacje ładujące (`framer-motion`), informujące użytkownika o asynchronicznym procesowaniu danych w tle.
 * **Instalacja PWA:** Użytkownicy mogą dodać IDPScanner do ekranu głównego smartfona, uzyskując doświadczenie zbliżone do natywnej aplikacji — bez App Store i Google Play.
 
-*(Zrzut ekranu: Interfejs mobilny z funkcją akwizycji z aparatu oraz responsywnym modułem statusu analizy)*
+| | | |
+|:---:|:---:|:---:|
+| ![M1](./assets/M1.jpg) | ![M2](./assets/M2.jpg) | ![M3](./assets/M3.jpg) |
+| ![M4](./assets/M4.jpg) | ![M5](./assets/M5.jpg) | ![M6](./assets/M6.jpg) |
+| ![M7](./assets/M7.jpg) | | |
 
 ---
 
